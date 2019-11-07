@@ -11,6 +11,7 @@ type OutRequest struct {
 
 type Params struct {
 	File          string `json:"file"`
+	DirSuffix    string `json:"dir_suffix"`
 	PredefinedACL string `json:"predefined_acl"`
 	ContentType   string `json:"content_type"`
 	CacheControl  string `json:"cache_control"`

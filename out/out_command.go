@@ -79,7 +79,14 @@ func (command *OutCommand) localPath(request OutRequest, sourceDir string) (stri
 
 func (command *OutCommand) objectPath(request OutRequest, localPath string) string {
 	if request.Source.Regexp != "" {
-		return filepath.Join(parentDir(request.Source.Regexp), filepath.Base(localPath))
+
+		dir := parentDir(request.Source.Regexp)
+
+		if request.Params.DirSuffix != "" {
+			dir += request.Params.DirSuffix
+		}
+
+		return filepath.Join(dir, filepath.Base(localPath))
 	} else {
 		return request.Source.VersionedFile
 	}
