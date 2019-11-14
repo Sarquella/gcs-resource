@@ -10,10 +10,11 @@ type OutRequest struct {
 }
 
 type Params struct {
-	File          string `json:"file"`
-	PredefinedACL string `json:"predefined_acl"`
-	ContentType   string `json:"content_type"`
-	CacheControl  string `json:"cache_control"`
+	File             string `json:"file"`
+	PredefinedACL    string `json:"predefined_acl"`
+	ContentType      string `json:"content_type"`
+	CacheControl     string `json:"cache_control"`
+	DynamicPathValue string `json:"dynamic_path_value"`
 }
 
 func (params Params) IsValid() (bool, string) {
