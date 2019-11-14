@@ -16,6 +16,7 @@ type Source struct {
 	InitialPath          string `json:"initial_path"`
 	InitialContentText   string `json:"initial_content_text"`
 	InitialContentBinary string `json:"initial_content_binary"`
+	DynamicPathKey       string `json:"dynamic_path_key"`
 }
 
 func (source *Source) IsValid() (bool, string) {
