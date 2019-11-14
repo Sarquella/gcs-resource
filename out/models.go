@@ -15,6 +15,7 @@ type Params struct {
 	ContentType      string `json:"content_type"`
 	CacheControl     string `json:"cache_control"`
 	DynamicPathValue string `json:"dynamic_path_value"`
+	DynamicPathFile  string `json:"dynamic_path_file"`
 }
 
 func (params Params) IsValid() (bool, string) {
