@@ -106,8 +106,14 @@ func parentDir(regexp string) string {
 func dynamicPath(path string, key string, request OutRequest) (string, error) {
 	if request.Params.DynamicPathValue != "" {
 		return gcsresource.DynamicPath(path, key, request.Params.DynamicPathValue), nil
+	} else if request.Params.DynamicPathFile != "" {
+		dynamicPathValue, err := gcsresource.DynamicPathValue(request.Params.DynamicPathFile)
+		if err != nil {
+			return "", err
+		}
+		return gcsresource.DynamicPath(path, key, dynamicPathValue), nil
 	} else {
-		return "", fmt.Errorf("use dynamic_path_value when dynamic_path_key is set")
+		return "", fmt.Errorf("use dynamic_path_value or dynamic_path_file when dynamic_path_key is set")
 	}
 }
 
