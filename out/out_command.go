@@ -33,7 +33,10 @@ func (command *OutCommand) Run(sourceDir string, request OutRequest) (OutRespons
 		return OutResponse{}, err
 	}
 
-	objectPath := command.objectPath(request, localPath)
+	objectPath, err := command.objectPath(request, localPath)
+	if err != nil {
+		return OutResponse{}, err
+	}
 
 	objectContentType := command.objectContentType(request)
 
@@ -77,12 +80,19 @@ func (command *OutCommand) localPath(request OutRequest, sourceDir string) (stri
 	return matches[0], nil
 }
 
-func (command *OutCommand) objectPath(request OutRequest, localPath string) string {
+func (command *OutCommand) objectPath(request OutRequest, localPath string) (string, error) {
+	var path string
 	if request.Source.Regexp != "" {
-		return filepath.Join(parentDir(request.Source.Regexp), filepath.Base(localPath))
+		path = filepath.Join(parentDir(request.Source.Regexp), filepath.Base(localPath))
 	} else {
-		return request.Source.VersionedFile
+		path = request.Source.VersionedFile
 	}
+
+	if request.Source.DynamicPathKey != "" {
+		return dynamicPath(path, request.Source.DynamicPathKey, request)
+	}
+
+	return path, nil
 }
 
 func (command *OutCommand) objectContentType(request OutRequest) string {
@@ -91,6 +101,14 @@ func (command *OutCommand) objectContentType(request OutRequest) string {
 
 func parentDir(regexp string) string {
 	return regexp[:strings.LastIndex(regexp, "/")+1]
+}
+
+func dynamicPath(path string, key string, request OutRequest) (string, error) {
+	if request.Params.DynamicPathValue != "" {
+		return gcsresource.DynamicPath(path, key, request.Params.DynamicPathValue), nil
+	} else {
+		return "", fmt.Errorf("use dynamic_path_value when dynamic_path_key is set")
+	}
 }
 
 func (command *OutCommand) metadata(objectPath string, url string) []gcsresource.MetadataPair {
