@@ -33,7 +33,7 @@ func (command *OutCommand) Run(sourceDir string, request OutRequest) (OutRespons
 		return OutResponse{}, err
 	}
 
-	objectPath, err := command.objectPath(request, localPath)
+	objectPath, err := command.objectPath(request, localPath, sourceDir)
 	if err != nil {
 		return OutResponse{}, err
 	}
@@ -80,7 +80,7 @@ func (command *OutCommand) localPath(request OutRequest, sourceDir string) (stri
 	return matches[0], nil
 }
 
-func (command *OutCommand) objectPath(request OutRequest, localPath string) (string, error) {
+func (command *OutCommand) objectPath(request OutRequest, localPath string, sourceDir string) (string, error) {
 	var path string
 	if request.Source.Regexp != "" {
 		path = filepath.Join(parentDir(request.Source.Regexp), filepath.Base(localPath))
@@ -89,7 +89,7 @@ func (command *OutCommand) objectPath(request OutRequest, localPath string) (str
 	}
 
 	if request.Source.DynamicPathKey != "" {
-		return dynamicPath(path, request.Source.DynamicPathKey, request)
+		return dynamicPath(path, request.Source.DynamicPathKey, request, sourceDir)
 	}
 
 	return path, nil
@@ -103,11 +103,11 @@ func parentDir(regexp string) string {
 	return regexp[:strings.LastIndex(regexp, "/")+1]
 }
 
-func dynamicPath(path string, key string, request OutRequest) (string, error) {
+func dynamicPath(path string, key string, request OutRequest, sourceDir string) (string, error) {
 	if request.Params.DynamicPathValue != "" {
 		return gcsresource.DynamicPath(path, key, request.Params.DynamicPathValue), nil
 	} else if request.Params.DynamicPathFile != "" {
-		dynamicPathValue, err := gcsresource.DynamicPathValue(request.Params.DynamicPathFile)
+		dynamicPathValue, err := gcsresource.DynamicPathValue(request.Params.DynamicPathFile, sourceDir)
 		if err != nil {
 			return "", err
 		}

@@ -2,11 +2,16 @@ package gcsresource
 
 import (
 	"io/ioutil"
+	"path/filepath"
 	"strings"
 )
 
-func DynamicPathValue(file string) (string, error) {
-	data, err := ioutil.ReadFile(file)
+func DynamicPath(path, replaceKey, replaceValue string) string{
+	return strings.Replace(path, replaceKey, replaceValue, -1)
+}
+
+func DynamicPathValue(file, sourceDir string) (string, error) {
+	data, err := ioutil.ReadFile(filepath.Join(sourceDir, file))
 	if err != nil {
 		return "", err
 	}
@@ -17,8 +22,4 @@ func DynamicPathValue(file string) (string, error) {
 	value = strings.Split(value, "\n")[0] //Only takes first line
 
 	return value, nil
-}
-
-func DynamicPath(path, replaceKey, replaceValue string) string{
-	return strings.Replace(path, replaceKey, replaceValue, -1)
 }
